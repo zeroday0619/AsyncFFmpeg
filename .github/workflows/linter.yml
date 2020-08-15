@@ -26,4 +26,4 @@ jobs:
 
       - name: Lint with black
         run: |
-          pipenv run black . --check
+          python -m black . --check
