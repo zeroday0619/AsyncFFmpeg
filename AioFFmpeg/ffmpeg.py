@@ -15,14 +15,24 @@ class FFmpeg(FFmpegUtils):
     _File = namedtuple("_File", ["url", "options"])
 
     def __init__(self, executable="ffmpeg"):
+
         self._executable = executable
         self._global_options = {}
         self._input_files = []
         self._output_files = []
 
+        self.progress = []
+        self.stream = None
         self._executed = False
         self._windows = sys.platform == "win32"
         super(FFmpeg, self).__init__()
+
+    async def __aenter__(self):
+        self.run_get_progress()
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        self.stream.kill()
 
     def generate_subprocess(self, *args, **kwargs):
         if self._windows:
@@ -54,11 +64,12 @@ class FFmpeg(FFmpegUtils):
             raise FFmpegError("AioFFmpeg is already executed")
 
         arguments = self.options_generator()
-        stream = await self.generate_subprocess(
+        self.stream = await self.generate_subprocess(
             *arguments, stdin=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
+        prs = []
         while 1:
-            s = await stream.stderr.readline()
+            s = await self.stream.stderr.readline()
             if s:
                 o_xu = s.decode("utf8")
                 rt = self.parse_progress(o_xu)
