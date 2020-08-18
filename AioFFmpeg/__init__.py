@@ -1,4 +1,4 @@
-from AioFFmpeg_progress.ffmpeg import FFmpeg
+from AioFFmpeg.ffmpeg import FFmpeg
 
 __all__ = ["ffmpeg"]
 __version__ = "0.0.1"

@@ -51,7 +51,7 @@ class FFmpeg(FFmpegUtils):
 
     async def run_get_progress(self):
         if self._executed:
-            raise FFmpegError("AioFFmpeg_progress is already executed")
+            raise FFmpegError("AioFFmpeg is already executed")
 
         arguments = self.options_generator()
         stream = await self.generate_subprocess(
